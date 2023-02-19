@@ -4,6 +4,58 @@ using System.Runtime.InteropServices;
 
 public class Program
 {
+    public static unsafe bool IsFunctionPatched(MethodBase methodBase)
+    {
+        try
+        {
+            IntPtr functionPointer = methodBase.MethodHandle.GetFunctionPointer();
+            byte firstByte1 = Marshal.ReadByte(functionPointer);
+            byte firstByte2 = *(byte*)(void*)functionPointer;
+
+            if (firstByte1 != firstByte2)
+            {
+                return true;
+            }
+
+            return firstByte1 == 0xE9 || firstByte1 == 0x33 || firstByte1 == 255 || firstByte1 == 0x90 || firstByte1 == 0x00
+                || firstByte2 == 0xE9 || firstByte2 == 0x33 || firstByte2 == 255 || firstByte2 == 0x90 || firstByte2 == 0x00;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
+    public static void Passed(string type, string details)
+    {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("[");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write("PASSED");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("] [");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write(type);
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("] " + details);
+        Console.WriteLine();
+    }
+
+    public static void NotPassed(string type, string details)
+    {
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("[");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.Write("NOT PASSED");
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("] [");
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Write(type);
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Write("] " + details);
+        Console.WriteLine();
+    }
+
     public static void Main()
     {
         Console.Title = "HardAntiInvoke | Made by https://github.com/GabryB03/";
@@ -81,44 +133,5 @@ public class Program
         }
 
         Console.ReadLine();
-    }
-
-    public static unsafe bool IsFunctionPatched(MethodBase methodBase)
-    {
-        IntPtr functionPointer = methodBase.MethodHandle.GetFunctionPointer();
-        byte firstByte1 = Marshal.ReadByte(functionPointer);
-        byte firstByte2 = *(byte*)(void*)functionPointer;
-        return firstByte1 == 0xE9 || firstByte1 == 0x33 || firstByte1 == 255 || firstByte1 == 0x90 || firstByte1 == 0x00
-            || firstByte2 == 0xE9 || firstByte2 == 0x33 || firstByte2 == 255 || firstByte2 == 0x90 || firstByte2 == 0x00;
-    }
-
-    public static void Passed(string type, string details)
-    {
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("[");
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write("PASSED");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("] [");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write(type);
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("] " + details);
-        Console.WriteLine();
-    }
-
-    public static void NotPassed(string type, string details)
-    {
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("[");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write("NOT PASSED");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("] [");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write(type);
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write("] " + details);
-        Console.WriteLine();
     }
 }
